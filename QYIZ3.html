@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<title>Crete Travel Quiz</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    margin: 0;
+}
+
+.container {
+    max-width: 1000px;
+    background: white;
+    margin: 30px auto;
+    padding: 30px;
+    border-radius: 15px;
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from {opacity:0; transform:translateY(20px);}
+    to {opacity:1; transform:translateY(0);}
+}
+
+h1, h2 {
+    text-align: center;
+    color: #0072ff;
+}
+
+.language-select {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.language-select button {
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 8px;
+    border: none;
+    background: #0072ff;
+    color: white;
+    cursor: pointer;
+}
+
+.question {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    padding: 10px;
+    margin: 6px 0;
+    background: #f2f2f2;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+label:hover {
+    background: #dbe9ff;
+}
+
+.submit {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    background: #0072ff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.result {
+    display: none;
+    margin-top: 30px;
+    animation: fadeIn 1s ease-in;
+}
+
+.result img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin: 15px 0;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    margin: 6px 0;
+}
+
+a {
+    color: #0072ff;
+    text-decoration: none;
+}
+
+.book {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    padding: 15px;
+    background: #ff9800;
+    color: white;
+    font-size: 18px;
+    border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="language-select">
+    <h2>Επίλεξε γλώσσα / Select language</h2>
+    <button onclick="setLanguage('el')">🇬🇷 Ελληνικά</button>
+    <button onclick="setLanguage('en')">🇬🇧 English</button>
+</div>
+
+<h1 id="title"></h1>
+
+<form id="quiz"></form>
+
+<button class="submit" id="submitBtn" onclick="showResult()" style="display:none;"></button>
+
+<div class="result" id="result">
+    <h2 id="resultTitle"></h2>
+    <p id="resultText"></p>
+    <img id="resultImage">
+    <div id="experience"></div>
+    <a class="book" href="https://www.booking.com" target="_blank">Book your trip</a>
+</div>
+
+</div>
+
+<script>
+const quizData = {
+el:{
+title:"Ποιο μέρος της Κρήτης σου ταιριάζει;",
+submit:"Δες το αποτέλεσμα",
+questions:[
+["Τι είδους διακοπές θέλεις;",["Θάλασσα","Ρομαντισμό","Ζωή","Φύση"]],
+["Πώς περνάς τα βράδια;",["Ήρεμα","Βόλτες","Nightlife","Ξεκούραση"]],
+["Τι σε ελκύει περισσότερο;",["Παραλίες","Ιστορία","Πόλη","Βουνά"]],
+["Με ποιον ταξιδεύεις;",["Οικογένεια","Σύντροφο","Φίλους","Μόνος"]],
+["Τι ρυθμό θέλεις;",["Χαλαρό","Ισορροπημένο","Έντονο","Αργό"]]
+]},
+en:{
+title:"Which part of Crete suits you best?",
+submit:"See your result",
+questions:[
+["What kind of vacation do you want?",["Beach","Romantic","City life","Nature"]],
+["How do you spend evenings?",["Quiet","Walking","Nightlife","Relaxing"]],
+["What attracts you most?",["Beaches","History","City","Mountains"]],
+["Who do you travel with?",["Family","Partner","Friends","Solo"]],
+["What pace do you like?",["Relaxed","Balanced","Intense","Slow"]]
+]}
+};
+
+const cities=["chania","rethymno","heraklion","lasithi"];
+let currentLang="el";
+
+const cityInfo={
+chania:{
+image:"images/chania.jpg",
+places:{
+Museums:["Maritime Museum Chania","Archaeological Museum Chania"],
+Beaches:["Balos Beach","Elafonissi Beach","Falassarna Beach"],
+Clubs:["Garage Club Chania"],
+Hotels:["Casa Delfino Hotel"],
+Cafes:["Koukouvaya Cafe"],
+Restaurants:["Tamam Restaurant"]
+}
+},
+rethymno:{
+image:"images/rethymno.jpg",
+places:{
+Museums:["Archaeological Museum Rethymno"],
+Beaches:["Rethymno Beach"],
+Clubs:["Ice Club Rethymno"],
+Hotels:["Fortezza Hotel"],
+Cafes:["Avli Lounge Cafe"],
+Restaurants:["Prima Plora"]
+}
+},
+heraklion:{
+image:"images/heraklion.jpg",
+places:{
+Museums:["Heraklion Archaeological Museum"],
+Beaches:["Ammoudara Beach"],
+Clubs:["Privilege Club"],
+Hotels:["GDM Megaron Hotel"],
+Cafes:["Think Tank Cafe"],
+Restaurants:["Peskesi Restaurant"]
+}
+},
+lasithi:{
+image:"images/lasithi.jpg",
+places:{
+Museums:["Nikos Kazantzakis Museum"],
+Beaches:["Voulisma Beach"],
+Clubs:["—"],
+Hotels:["Elounda Beach Hotel"],
+Cafes:["Gioma Meze Cafe"],
+Restaurants:["Ferryman Restaurant"]
+}
+}
+};
+
+function setLanguage(lang){
+currentLang=lang;
+document.getElementById("title").innerText=quizData[lang].title;
+document.getElementById("submitBtn").innerText=quizData[lang].submit;
+document.getElementById("submitBtn").style.display="block";
+const quiz=document.getElementById("quiz");
+quiz.innerHTML="";
+quizData[lang].questions.forEach((q,i)=>{
+let div=document.createElement("div");
+div.className="question";
+div.innerHTML=`<h3>${q[0]}</h3>`;
+q[1].forEach((ans,index)=>{
+div.innerHTML+=`
+<label>
+<input type="radio" name="q${i}" value="${index}">
+${ans}
+</label>`;
+});
+quiz.appendChild(div);
+});
+}
+
+function showResult(){
+let scores={chania:0,rethymno:0,heraklion:0,lasithi:0};
+document.querySelectorAll("input[type=radio]:checked").forEach(a=>{
+scores[cities[a.value]]++;
+});
+let best=Object.keys(scores).reduce((a,b)=>scores[a]>scores[b]?a:b);
+document.getElementById("resultTitle").innerText=best.toUpperCase();
+document.getElementById("resultText").innerText=
+currentLang==="el"?"Αξέχαστες εμπειρίες σε περιμένουν!":"Unforgettable experiences await!";
+document.getElementById("resultImage").src=cityInfo[best].image;
+
+let html="<ul>";
+for(let cat in cityInfo[best].places){
+html+=`<li><b>${cat}:</b> `;
+html+=cityInfo[best].places[cat].map(p=>
+`<a target="_blank" href="https://www.google.com/maps/search/${encodeURIComponent(p)}">${p}</a>`
+).join(", ");
+html+="</li>";
+}
+html+="</ul>";
+document.getElementById("experience").innerHTML=html;
+document.getElementById("result").style.display="block";
+}
+</script>
+
+</body>
+</html>
